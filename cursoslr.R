@@ -28,13 +28,14 @@ results
 #*************************-Processar pdfs
 library(tm)
 #lê arquivos .pdf localizados no diretório pasta/
-files <- list.files("~/lda/isiarticles/",pattern = "pdf$")
+#rodar esse comando no diretório pai de pasta/
+files <- list.files("pasta/",pattern = "pdf$")
 
 #definindo uma funcao
 rpdf <- readPDF(control = list(text = "-layout"))
 
-#muda diretorio
-setwd("~/lda/isiarticles/")
+#muda diretorio para o diretorio dos arquivos .pdf
+setwd("pasta/")
 
 #usa a funcao rpdf
 #as variaveis isi.pdf e isi.pdfdtm podem ser exploradas usando $
