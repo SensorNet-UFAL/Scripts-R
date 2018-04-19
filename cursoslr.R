@@ -1,3 +1,11 @@
+#Esse arquivo foi criado para o curso de Revisão Sistemática
+# apresentado no LCCV, no ano de 2018 por Randy Quindai
+# os slides do curso podem ser encontrados no seguinte endereço
+# https://sites.google.com/site/sensornetufal/how-to-s/reviso-sistemtica
+# LaCCAN - Laboratório de Computação Científica e Análise Numérica
+# Grupo de pesquisa : SensorNet-UFAL
+
+
 library(bibliometrix)
 #lê arquivo .bib
 #converte .bib num DataFrame pronto a ser processado pelo R
