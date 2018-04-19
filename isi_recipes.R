@@ -5,9 +5,14 @@ library(topicmodels)
 library(dplyr)
 library(tm.plugin.webmining)
 
-#all articles before selection, stats on bibtex
-isi.rawdata <- readFiles("savedrecs.bib")
+#all articles before selection
+isi.rawdata <- readFiles("isi/savedrecs.bib")
 isi.dfrawdata <- convert2df(isi.rawdata, dbsource = "isi", format = "bibtex")
+
+#selected papers
+isi.selected <- readFiles("isiselected.bib")
+isi.df <- convert2df(isi.selected, dbsource = "isi", format = "bibtex")
+
 
 #conceptual coword structure
 isi.rawcs <- conceptualStructure(isi.dfrawdata, field = "DE_TM", minDegree = 7, k.max = 4, stemming = FALSE, labelsize = 10)
@@ -16,17 +21,22 @@ isi.rawcs$km.res
 isi.rawcs <- conceptualStructure(isi.dfrawdata, field = "DE_TM", minDegree = 14, k.max = 5, stemming = FALSE, labelsize = 10)
 
 
-#work with selected pdf files
-#first set the workspace where all pdf files are located
+#selected pdf files
+library(tm)
 files <- list.files("isiarticles/",pattern = "pdf$")
 rpdf <- readPDF(control = list(text = "-layout"))
 isi.pdf <- Corpus(URISource(files), readerControl = list(reader = rpdf))
 isi.pdftdm <- TermDocumentMatrix(isi.pdf, control=list(removePunctuation = TRUE, stopwords = TRUE, tolower = TRUE, stemming = TRUE, removeNumbers = TRUE))
 isi.pdfdtm <- DocumentTermMatrix(isi.pdf, control=list(removePunctuation = TRUE, stopwords = TRUE, tolower = TRUE, stemming = FALSE, removeNumbers = TRUE))
 
+
 #select terms
 isi.dtmTerms <- Terms(isi.pdfdtm)
 head(isi.dtmTerms)
+library(tidytext)
+#sentiment analysis
+isi.pdfsentiment <- isi.pdftidy %>%
+  inner_join(get_sentiments("bing"), by = c(term ="word"))
 isi.pdftidy <- tidy(isi.pdfdtm)
 isi.pdfsentiment %>%
   + count(sentiment, term, wt = count) %>%
@@ -39,9 +49,10 @@ isi.pdfsentiment %>%
   + ylab("Contribution to sentiment") +
   + coord_flip()
 
-#sentiment analysis
-isi.pdfsentiment <- isi.pdftidy %>%
-  inner_join(get_sentiments("bing"), by = c(term ="word"))
+
+#create dataframe
+isi.df <- convert2df(isi.rawdata, dbsource = "isi", format = "bibtex")
+
 
 #tf-idf analysis, book chapter 3
 isi.pdf.tf_idf <- isi.pdftidy %>%
@@ -67,6 +78,7 @@ isi.pdf.aptop_terms %>%
   + geom_col(show.legend = FALSE) +
   + facet_wrap(~ topic, scales = "free") +
   + coord_flip()
+
 
 
 #radar chart
